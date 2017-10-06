@@ -1,14 +1,18 @@
 import random
 import re
+from saveGame import SaveGame
 
 
 def main ():
   dictionary = randomWord()
+  savedStart = input ("Do you want to open a saved game?[y/n]:")
+  #if savedStart == "y":
+  #else:
   name = input("Welcome to hangman! What is your name? ")
   print ("Do you want to try and guess one of ", len(dictionary), "words?")
   play = input("Enter [y/n]: ")
   play = str.lower(play)
-  gameStart(play, dictionary)
+  gameStart(play, dictionary, name)
   print ("Thanks for playing!")
 
 def randomWord():
@@ -24,7 +28,7 @@ def randomWord():
   dictionary = str.split(words)
   return dictionary
 
-def gameStart(play, dictionary):
+def gameStart(play, dictionary, name):
   wins = 0
   losses = 0
   #simple while loop game will stop on 'n'
@@ -39,6 +43,11 @@ def gameStart(play, dictionary):
         losses = losses + 1
         print ("Sorry, you didn't guess it this time. The word was", choice)
     print ("you have won", wins, "games, and lost", losses)
+    saveQuery = input ("Would you like to save the game? [y/n]: ")
+    if saveQuery == 'y':
+        saveData = SaveGame(name, wins, losses)
+        saveFile (saveData)
+        print("your game has been saved!")
     play = input("Would you like to play again? [y/n]")
     play = str.lower(play)
 
@@ -80,5 +89,12 @@ def playGame(dictionary):
           print (dash)
           print("Sorry, that letters not in the word. You have ", chances, "guesses left!")
   return letters, choice
+
+def saveFile (object):
+    savedGames = "savedGames.csv"
+    output_file = open (savedGames, 'a')
+    strObj = str(object) + '\n'
+    output_file.write (strObj)
+    output_file.close()
 
 main()
