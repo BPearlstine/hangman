@@ -2,13 +2,29 @@ import random
 import re
 from saveGame import SaveGame
 
+def searchSaves(name):
+    with open("savedGames.csv") as forSearch:
+        for row in forSearch:
+            if  name in row:
+                row = row.strip()
+                game = row.split(",")
+                name = game[0]
+                wins = game[1]
+                losses = game[2]
+                print ("Welcome " + name + ", you have won " + wins + " and lost " + losses + " games so far!")
+                return SaveGame(name,wins,losses)
+
 
 def main ():
+  name = ""
   dictionary = randomWord()
   savedStart = input ("Do you want to open a saved game?[y/n]:")
-  #if savedStart == "y":
-  #else:
-  name = input("Welcome to hangman! What is your name? ")
+  if savedStart == "y":
+      name = input("What is the name your game is saved under?: ")
+      currGame = searchSaves(name)
+  else:
+      name = input("Welcome to hangman! What is your name? ")
+      currGame = SaveGame(name,0,0)
   print ("Do you want to try and guess one of ", len(dictionary), "words?")
   play = input("Enter [y/n]: ")
   play = str.lower(play)
