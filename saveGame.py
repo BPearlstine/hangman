@@ -5,11 +5,20 @@ class SaveGame ():
         self.__wins = wins
         self.__losses = losses
 
-    def changeWins(newWins):
-        self.__wins = self.__wins + newWins
+    def changeName(newName):
+        self.__name= newName
 
-    def changeLosses(newLosses):
-        self.__losses = self.__losses + newLosses
+    def changeWins(self):
+        self.__wins = self.__wins + 1
+
+    def changeLosses(self):
+        self.__losses = self.__losses + 1
+
+    def currentScore(self):
+
+        score = "you have won " + str(self.__wins) + " games, and lost " + str(self.__losses)
+
+        return score
 
     def __str__ (self):
 
