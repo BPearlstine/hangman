@@ -11,16 +11,26 @@ def dict_factory(cursor, row):
     return d
 
 
-def searchSaves(name):
-    #search db for correct row by name
-    conn = sqlite3.connect('hangman.db')
-    conn.row_factory = dict_factory
-    c = conn.cursor()
-    c.execute('SELECT * FROM game WHERE name=?', name)
-    # print (c.fetchone())
-    gameFile = c.fetchone()
-    print ("Welcome ", gameFile['name'], " you have ", gameFile['wins'], " wins and ", gameFile['losses'], " losses.")
-    conn.close()
+def searchSaves(name,play):
+    try:
+        #search db for correct row by name
+        conn = sqlite3.connect('hangman.db')
+        conn.row_factory = dict_factory
+        c = conn.cursor()
+        c.execute('SELECT * FROM game WHERE name=?', name)
+        gameFile = c.fetchone()
+        print ("Welcome ", gameFile['name'], " you have ", gameFile['wins'], " wins and ", gameFile['losses'], " losses.")
+        conn.close()
+        play = "y"
+        return play
+
+    except:
+        pass
+    else:
+        print("Sorry that file doesn't exist, try again.")
+        play = "n"
+        return play
+
 
 
 def randomWord():
@@ -57,6 +67,8 @@ def gameStart(play, dictionary, name, newGame):
         print("your game has been saved!")
     play = input("Would you like to play again? [y/n]")
     play = str.lower(play)
+  return play
+
 
 
 
@@ -114,25 +126,25 @@ def saveFile (name, wins, losses, newGame):
 def main ():
   name = ""
   play = "y"
+  while play == "y":
+      dictionary = randomWord()
+      print ("Let's play hangman!")
+      savedStart = input ("Do you want to open a saved game?[y/n]:")
+      savedStart = str.lower(savedStart)
+      #check if using previously saved game
+      if savedStart == "y":
+          name = input("What is the name your game is saved under?: ")
+          name = str.lower(name)
+          nameTup = (name,)
+          play = searchSaves(nameTup, play)
+          newGame = False
+          play = gameStart(play, dictionary, name, newGame)
 
-  dictionary = randomWord()
-  print ("Let's play hangman!")
-  savedStart = input ("Do you want to open a saved game?[y/n]:")
-  savedStart = str.lower(savedStart)
-  #check if using previously saved game
-  if savedStart == "y":
-      name = input("What is the name your game is saved under?: ")
-      name = str.lower(name)
-      nameTup = (name,)
-      currGame = searchSaves(nameTup)
-      newGame = False
-      gameStart(play, dictionary, name, newGame)
-
-  else:
-      name = input("Welcome to hangman! What is your name? ")
-      name = str.lower(name)
-      newGame = True
-      gameStart(play, dictionary, name, newGame)
+      else:
+          name = input("Welcome to hangman! What is your name? ")
+          name = str.lower(name)
+          newGame = True
+          play = gameStart(play, dictionary, name, newGame)
   print ("Thanks for playing!")
 
 
