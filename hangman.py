@@ -11,7 +11,7 @@ def dict_factory(cursor, row):
     return d
 
 
-def searchSaves(name,play):
+def searchSaves(name, foundName):
     try:
         #search db for correct row by name
         conn = sqlite3.connect('hangman.db')
@@ -21,15 +21,14 @@ def searchSaves(name,play):
         gameFile = c.fetchone()
         print ("Welcome ", gameFile['name'], " you have ", gameFile['wins'], " wins and ", gameFile['losses'], " losses.")
         conn.close()
-        play = "y"
-        return play
+        foundName = "y"
+        return foundName
+
 
     except:
-        pass
-    else:
         print("Sorry that file doesn't exist, try again.")
-        play = "n"
-        return play
+        foundName = "n"
+        return foundName
 
 
 
@@ -46,28 +45,32 @@ def randomWord():
   dictionary = str.split(words)
   return dictionary
 
-def gameStart(play, dictionary, name, newGame):
-  wins = 0
-  losses = 0
-  #simple while loop game will stop on 'n'
-  while play == 'y':
-    letters, choice = playGame(dictionary)
-    if len(letters) == 0:
-        #length of letters = 0 means you've guessed the word, wins + 1
-        wins = wins + 1
-        print ("Great game! you correctly guessed the word,", choice)
-    else:
-        # hangman = 6 no more guesses, you've lost, losses + 1
-        losses = losses + 1
-        print ("Sorry, you didn't guess it this time. The word was", choice)
-    print (name, "you currently have ", wins, "wins and ", losses, " losses!")
-    saveQuery = input ("Would you like to save the game? [y/n]: ")
-    if saveQuery == 'y':
-        saveFile (name, wins, losses, newGame)
-        print("your game has been saved!")
-    play = input("Would you like to play again? [y/n]")
-    play = str.lower(play)
-  return play
+
+def gameStart(name, newGame):
+
+    dictionary = randomWord()
+    play = "y"
+    wins = 0
+    losses = 0
+    #simple while loop game will stop on 'n'
+    while play == 'y':
+        letters, choice = playGame(dictionary)
+        if len(letters) == 0:
+            #length of letters = 0 means you've guessed the word, wins + 1
+            wins = wins + 1
+            print ("Great game! you correctly guessed the word,", choice)
+        else:
+            # hangman = 6 no more guesses, you've lost, losses + 1
+            losses = losses + 1
+            print ("Sorry, you didn't guess it this time. The word was", choice)
+        print (name, "you currently have ", wins, "wins and ", losses, " losses!")
+        saveQuery = input ("Would you like to save the game? [y/n]: ")
+        if saveQuery == 'y':
+            saveFile (name, wins, losses, newGame)
+            print("your game has been saved!")
+        play = input("Would you like to play again? [y/n]")
+        play = str.lower(play)
+
 
 
 
@@ -84,7 +87,7 @@ def playGame(dictionary):
   dash = str('_') * len(choice)
   dash = list(dash)
   #just for testing remove print(choice) from final
-  print (choice)
+  # print (choice)
   print (dash)
   # keep looping for more guesses until all letters are guessed
   # or until all six incorrect guesses are used
@@ -123,28 +126,33 @@ def saveFile (name, wins, losses, newGame):
     conn.close()
 
 
-def main ():
-  name = ""
-  play = "y"
-  while play == "y":
-      dictionary = randomWord()
-      print ("Let's play hangman!")
-      savedStart = input ("Do you want to open a saved game?[y/n]:")
-      savedStart = str.lower(savedStart)
-      #check if using previously saved game
-      if savedStart == "y":
-          name = input("What is the name your game is saved under?: ")
-          name = str.lower(name)
-          nameTup = (name,)
-          play = searchSaves(nameTup, play)
-          newGame = False
-          play = gameStart(play, dictionary, name, newGame)
+def checkName(savedStart):
+    foundName = "n"
+    savedStart = savedStart
+    newGame = True
 
-      else:
-          name = input("Welcome to hangman! What is your name? ")
-          name = str.lower(name)
-          newGame = True
-          play = gameStart(play, dictionary, name, newGame)
+    while foundName == "n":
+        if savedStart == "y":
+            name = input("What is the name your game is saved under?: ")
+            name = str.lower(name)
+            nameTup = (name,)
+            foundName = searchSaves(nameTup, foundName)
+            newGame = False
+            print(foundName)
+        else:
+            name = input("Welcome to hangman! What is your name? ")
+            name = str.lower(name)
+            foundName = "y"
+
+    gameStart(name,newGame)
+
+
+def main ():
+  print ("Let's play hangman!")
+
+  savedStart = input ("Do you want to open a saved game?[y/n]:")
+  savedStart = str.lower(savedStart)
+  checkName(savedStart)
   print ("Thanks for playing!")
 
 
