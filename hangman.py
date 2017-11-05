@@ -126,19 +126,18 @@ def saveFile (name, wins, losses, newGame):
     conn.close()
 
 
-def checkName(savedStart):
+def checkName():
     foundName = "n"
-    savedStart = savedStart
     newGame = True
-
     while foundName == "n":
+        savedStart = input ("Do you want to open a saved game?[y/n]:")
+        savedStart = str.lower(savedStart)
         if savedStart == "y":
             name = input("What is the name your game is saved under?: ")
             name = str.lower(name)
             nameTup = (name,)
             foundName = searchSaves(nameTup, foundName)
             newGame = False
-            print(foundName)
         else:
             name = input("Welcome to hangman! What is your name? ")
             name = str.lower(name)
@@ -149,10 +148,7 @@ def checkName(savedStart):
 
 def main ():
   print ("Let's play hangman!")
-
-  savedStart = input ("Do you want to open a saved game?[y/n]:")
-  savedStart = str.lower(savedStart)
-  checkName(savedStart)
+  checkName()
   print ("Thanks for playing!")
 
 
