@@ -1,6 +1,5 @@
 import random
 import re
-from saveGame import SaveGame
 import sqlite3
 
 #convert db to dict
